@@ -1,4 +1,4 @@
-#include <Keyboard.h>
+//#include <Keyboard.h>
 
 // Represents a 9 panel dance pad. All 9-length data arrays represent panels in
 // left-to-right, top-to-bottom order (normal english reading order). Simulates
@@ -22,11 +22,13 @@ char characters[9] =  {'q', 'w', 'e', 'a', 's', 'd', 'z', 'x', 'c'}; // Characte
 int zero_out_values[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0}; // Base sensor values (to cancel weight of the panels)
 int resistor_value = 10; // Resistor value in the circuit (see arduino schematic)
 int fsrReading[9]; // Raw reading from FSRs (analog sensors)
+
 int zero_state;	// Button state for zeroing-out the panels
+panel dancepad[9];
 
 void setup() {
   Serial.begin(9600);
-  Keyboard.begin();
+  //Keyboard.begin();
   pinMode(2, INPUT); // Button to zero-out the panels
 }
 
@@ -44,11 +46,6 @@ int zeroed_out(int sensor_val, int zero_val) {
 
 
 void loop() {
-  //fsrReading[0] = analogRead(1); 
-  //fsrReading[1] = analogRead(2); 
-  //fsrReading[2] = analogRead(3); 
-  //fsrReading[3] = analogRead(4); 
-  //fsrReading[4] = analogRead(5); 
   fsrReading[5] = analogRead(6); 
   fsrReading[6] = analogRead(7); 
   fsrReading[7] = analogRead(8);
@@ -64,7 +61,7 @@ void loop() {
   for (int i = 0; i < 9; i++) {
     if (zeroed_out(normalize(fsrReading[i]), zero_out_values[i]) > panel_sensitivities[i] && panelstate[i] == 0) {
       panelstate[i] = 1;
-      Keyboard.press(characters[i]);
+      //Keyboard.press(characters[i]);
     }
     
     //Serial.print(zeroed_out(normalize(fsrReading[i]), zero_out_values[i]));
@@ -72,7 +69,7 @@ void loop() {
     
     if (zeroed_out(normalize(fsrReading[i]), zero_out_values[i]) < panel_sensitivities[i] && panelstate[i] == 1) {
       panelstate[i] = 0;
-      Keyboard.release(characters[i]);
+      //Keyboard.release(characters[i]);
     }
   }    
   
