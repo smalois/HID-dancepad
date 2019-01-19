@@ -9,19 +9,12 @@ typedef struct panel {
 	char key_to_send; // What key this panel represents
 
 	bool state; // 1/0 -> pressed/not
-	int current_sensor_value; 
+	int sensor_value; 
 	int sensitivity; // Button trigger tolerance
 
 	int base_sensor_value; // Sensor value after being zeroed out.
 	int accompanying_resistor_value; // in Kohms
 } panel;
-
-bool panelstate[9]; // if the panel is pressed or not
-int panel_sensitivities[9] =    {400, 400, 400, 400, 400, 400, 400, 400, 350};  // panel sensitivity val 0 - 1024
-char characters[9] =  {'q', 'w', 'e', 'a', 's', 'd', 'z', 'x', 'c'}; // Characters to send on panel pressed
-int zero_out_values[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0}; // Base sensor values (to cancel weight of the panels)
-int resistor_value = 10; // Resistor value in the circuit (see arduino schematic)
-int fsrReading[9]; // Raw reading from FSRs (analog sensors)
 
 int zero_state;	// Button state for zeroing-out the panels
 panel dancepad[9];
@@ -33,7 +26,22 @@ void setup() {
 }
 
 int normalize(int raw_reading) {
-  return pow((double)raw_reading/ 1024, resistor_value) * 1024;
+  return pow((double)raw_reading/ 1024, 10) * 1024;
+}
+
+// panel sensor value to force. 
+unsigned long ptof(struct panel sensor) {
+	unsigned long conductance = 1000000;
+	int voltage = map(sensor.sensor_value, 0, 1023, 0, 5000);
+	unsigned long fsr_resistance = 5000 - voltage;
+	fsr_resistance *= sensor.accompanying_resistor_value;;
+	fsr_resistance /= voltage;
+	conductance /= fsr_resistance;
+	
+	if (conductance <= 1000) {
+		return conductance / 80;
+	} 
+	return (conductance - 1000) / 30;
 }
 
 int zeroed_out(int sensor_val, int zero_val) {
@@ -44,35 +52,43 @@ int zeroed_out(int sensor_val, int zero_val) {
   return ((float)abs((sensor_val-zero_val)) / (float)denominator) * 1024;
 }
 
+int is_pressed(struct panel cur_panel) {
+	int voltage = map(cur_panel.sensor_value, 0, 1023, 0, 5000);
+	return cur_panel.sensor_value < cur_panel.sensitivity; 
+}
 
 void loop() {
-  fsrReading[5] = analogRead(6); 
-  fsrReading[6] = analogRead(7); 
-  fsrReading[7] = analogRead(8);
-  fsrReading[8] = analogRead(9);
-  zero_state = digitalRead(2);
+	dancepad[1].sensor_value = analogRead(6);
+	dancepad[3].sensor_value = analogRead(7);
+	dancepad[5].sensor_value = analogRead(8);
+	dancepad[7].sensor_value = analogRead(9);
+  	zero_state = digitalRead(2);
 
-  if(zero_state == HIGH) {
-    for (int i = 0; i < 9; i++) {
-      zero_out_values[i] = normalize(fsrReading[i]);
-    }
-  }
+	// Check the state of the zero-out button
+  	if(zero_state == HIGH) {
+		// Zero out every panel by setting the base sensor value
+		// (Don't step on anything when pressing this button)
+    	for (int i = 0; i < 9; i++) {
+      		dancepad[i].base_sensor_value = normalize(dancepad[i].sensor_value);
+    	}
+  	}
 
-  for (int i = 0; i < 9; i++) {
-    if (zeroed_out(normalize(fsrReading[i]), zero_out_values[i]) > panel_sensitivities[i] && panelstate[i] == 0) {
-      panelstate[i] = 1;
-      //Keyboard.press(characters[i]);
-    }
-    
-    //Serial.print(zeroed_out(normalize(fsrReading[i]), zero_out_values[i]));
-    //Serial.print(", ");
-    
-    if (zeroed_out(normalize(fsrReading[i]), zero_out_values[i]) < panel_sensitivities[i] && panelstate[i] == 1) {
-      panelstate[i] = 0;
-      //Keyboard.release(characters[i]);
-    }
-  }    
+	// Read the state of each panel
+  	for (int i = 0; i < 9; i++) {
+		if (is_pressed(dancepad[i])) {
+			dancepad[i].state = 1;
+			//Keyboard.press(characters[i]);
+		}
+		
+		//Serial.print(zeroed_out(normalize(fsrReading[i]), zero_out_values[i]));
+		//Serial.print(", ");
+		
+		if (!is_pressed(dancepad[i])) {
+			dancepad[i].state = 0;
+			//Keyboard.release(characters[i]);
+		}
+	}    
   
-  //Serial.println();
-  delay(1);  
+  	//Serial.println();
+  	delay(1);  
 }
