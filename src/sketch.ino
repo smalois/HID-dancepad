@@ -10,9 +10,9 @@ typedef struct panel {
 
 	int cur_force;	 // in (milli?)newtons
 	int sensitivity; // Button trigger tolerance based on force value in
-					 // mN. Setting these properly will likely take some
-					 // trial/error based on your sensors and how they're
-					 // mounted.
+					         // mN. Setting these properly will likely take some
+					         // trial/error based on your sensors and how they're
+					         // mounted.
 
 	int base_force; // Sensor value after being zeroed out.
 	char key_to_send; // What key this panel represents
@@ -22,7 +22,7 @@ typedef struct panel {
 int zero_state; // Button state for zeroing-out the panels
 panel dancepad[9];
 char keys[9] = {'q', 'w', 'e', 'a', 's', 'd', 'z', 'x', 'c'};
-int sensitivities[9] = {60, 60, 60, 60, 60, 60, 60, 60, 60};
+int sensitivities[9] = {10, 10, 10, 10, 10, 10, 10, 10, 10};
 int resistors[9] = {10, 10, 10, 10, 10, 10, 10, 10, 10};
 
 
@@ -55,7 +55,8 @@ unsigned long ptof(int sensor_val) {
 
 
 bool is_pressed(struct panel cur_panel) {
-	return cur_panel.cur_force > cur_panel.sensitivity; 
+     int normalized_force = abs(cur_panel.cur_force - cur_panel.base_force);
+     return normalized_force > cur_panel.sensitivity; 
 }
 
 void loop() {
