@@ -8,9 +8,9 @@
 typedef struct panel {
 	bool state; // 1/0 -> pressed/not
 
-	int cur_force;	 // in Newtons
+	int cur_force;	 // in (milli?)newtons
 	int sensitivity; // Button trigger tolerance based on force value in
-					 // Newtons. Setting these properly will likely take some
+					 // mN. Setting these properly will likely take some
 					 // trial/error based on your sensors and how they're
 					 // mounted.
 
@@ -38,7 +38,7 @@ void setup() {
 	}
 }
 
-// Convert panel sensor value to force (N).
+// Convert panel sensor value to force (mN).
 unsigned long ptof(int sensor_val) {
 	unsigned long conductance = 1000000;
 	int voltage = map(sensor_val, 0, 1023, 0, 5000);
