@@ -1,5 +1,7 @@
 #include <Keyboard.h>
 
+#define ARDUINO_VOLTAGE 3300
+
 // Represents a 9 panel dance pad. All 9-length data arrays represent panels in
 // left-to-right, top-to-bottom order (normal english reading order). Simulates
 // a keyboard input using the leftmost letter group of a standard keyboard
@@ -41,9 +43,9 @@ void setup() {
 
 // Convert panel sensor value to a ""linear"" force value.
 unsigned long ptof(int sensor_val) {
-	int voltage = map(sensor_val, 0, 1023, 0, 3300);  
+	int voltage = map(sensor_val, 0, 1023, 0, ARDUINO_VOLTAGE);  
 	unsigned long conductance = 1000000;
-	unsigned long fsr_resistance = 3300 - voltage;
+	unsigned long fsr_resistance = ARDUINO_VOLTAGE - voltage;
 	fsr_resistance *= 10000;
 	fsr_resistance /= voltage;
 	conductance /= fsr_resistance;
