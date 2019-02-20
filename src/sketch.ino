@@ -3,6 +3,9 @@
 // 
 // By default, analog pins 0 through (number_of_panels - 1) 
 // will be used. Pin x will press joy button x + 1.
+// Written for teensy 3.2
+// By default, analog pins 0 through (number_of_panels - 1) 
+// will be used. Pin x will press joy button x + 1.
 
 #define ARDUINO_VOLTAGE 3300
 #define number_of_panels 4
@@ -79,7 +82,7 @@ int zero_state;     // Button state for zeroing-out the panels
 void setup() {
   Serial.begin(9600);
   pinMode(2, INPUT); // Button to zero-out the panels
-  Joystick.useManualSend(true); // Sends joy input at the end of each loop
+  Joystick.useManualSend(true);
   for (int i = 0; i < number_of_panels; i++) {
     dancepad[i] = {sensitivities[i], resistors[i], i};
   }
