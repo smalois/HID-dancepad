@@ -3,9 +3,6 @@
 // 
 // By default, analog pins 0 through (number_of_panels - 1) 
 // will be used. Pin x will press joy button x + 1.
-// Written for teensy 3.2
-// By default, analog pins 0 through (number_of_panels - 1) 
-// will be used. Pin x will press joy button x + 1.
 
 #define ARDUINO_VOLTAGE 3300
 #define number_of_panels 4
