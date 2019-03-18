@@ -1,3 +1,5 @@
 # HID-dancepad
 
-WIP
+See Wiki for more information.
+
+Currently a work in progress.
