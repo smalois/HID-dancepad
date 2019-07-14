@@ -12,7 +12,7 @@
 // Prevents jittery inputs for analog signals (without debounce delays).
 #define FORCE_RELEASE_WINDOW 10
 
-// Value should match your board's Vin. Teensy is 3300mv by default.
+// Value should match your board's Vin. Teensy is 3.3V by default.
 #define ARDUINO_VOLTAGE 3300
 
 // The sensitivity of each panel. Sensitivity is a force value that 
@@ -27,10 +27,8 @@ int sensitivities[NUMBER_OF_PANELS] = {80, 240, 75, 100, 95, 180, 90, 130,
 160};
 
 // Stores the values of the accompanying resistors. Because stomping on FSRs
-// introduces
-// a lot of force, using lower value resistors can improve the resolution of
-// the sensor
-// and lead to better results.
+// introduces a lot of force, using lower value resistors can improve the
+// resolution of the sensor and lead to better results.
 int resistors[NUMBER_OF_PANELS] = {505, 675, 675, 1000, 1000, 1000, 1000, 1000,
 1000};
 
@@ -85,8 +83,7 @@ class Panel {
         // "debounce" by changing the sensitivity to a lower value once in the
         // pressed state.
         if (!pressed) {
-          this->sensitivity = this->sensitivity - FORCE_RELEASE_WINDOW; // This
-only runs once during the transition to a pressed state
+          this->sensitivity = this->sensitivity - FORCE_RELEASE_WINDOW; // This only runs once during the transition to a pressed state
           pressed = 1;
         }
       } else { // is released.
@@ -95,8 +92,7 @@ only runs once during the transition to a pressed state
         // Return to original sensitivity after "debounce" changed the release
         // sensitivity.
         if (pressed) {
-          this->sensitivity = this->sensitivity + FORCE_RELEASE_WINDOW; // This
-only runs once during the transition out of a pressed state
+          this->sensitivity = this->sensitivity + FORCE_RELEASE_WINDOW; // This only runs once during the transition out of a pressed state
           pressed = 0;
         }
       }
