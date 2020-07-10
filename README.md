@@ -2,4 +2,4 @@
 
 See Wiki for more information.
 
-Currently a work in progress.
+Feedback welcome from anyone who attempts to follow along or try something like this!
